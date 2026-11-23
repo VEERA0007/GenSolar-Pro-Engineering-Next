@@ -198,7 +198,7 @@ class _EngineeringWorkspaceScreenState extends ConsumerState<EngineeringWorkspac
               _CadTab(key: ValueKey('${project.id}-cad'), project: project, onSave: (values) => _saveSection(project, 'cad', values), onReviewPv: () => ref.read(activeWorkspaceTabProvider.notifier).select(1), onNext: () => ref.read(activeWorkspaceTabProvider.notifier).select(9)),
               _ReportTab(key: ValueKey('${project.id}-report'), project: project, onSave: (values) => _saveSection(project, 'report', values)),
             ])),
-          ]),
+          ]);
       },
     );
   }
