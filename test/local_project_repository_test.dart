@@ -10,7 +10,7 @@ void main() {
   late LocalProjectRepository repository;
 
   setUp(() async {
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferencesAsync.setMockInitialValues({});
     repository = LocalProjectRepository();
   });
 
