@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/in_memory_shared_preferences_async.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_async_platform_interface.dart';
 
 import 'package:gensolar_pro_engineering/core/data/local_project_repository.dart';
 import 'package:gensolar_pro_engineering/core/models/solar_project.dart';
@@ -10,7 +11,7 @@ void main() {
   late LocalProjectRepository repository;
 
   setUp(() async {
-    SharedPreferencesAsync.setMockInitialValues({});
+    SharedPreferencesAsyncPlatform.instance = InMemorySharedPreferencesAsync.empty();
     repository = LocalProjectRepository();
   });
 
@@ -52,7 +53,7 @@ void main() {
     await repository.save(project('p-1'));
     final backup = await repository.exportJson();
 
-    SharedPreferences.setMockInitialValues({});
+    SharedPreferencesAsyncPlatform.instance = InMemorySharedPreferencesAsync.empty();
     repository = LocalProjectRepository();
     expect(await repository.importJson(backup), 1);
     expect((await repository.loadAll()).single.id, 'p-1');
