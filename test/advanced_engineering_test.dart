@@ -109,8 +109,8 @@ void main() {
         groupingFactor: .8, installationFactor: .95,
       );
       expect(result.metrics['Effective ampacity']!.value, closeTo(136.8, .001));
-      expect(result.warnings, contains(contains('No conductor temperature')));
-      expect(result.warnings, isNot(contains(contains('Design current exceeds'))));
+      expect(result.warnings.any((warning) => warning.contains('No conductor temperature')), isTrue);
+      expect(result.warnings.any((warning) => warning.contains('Design current exceeds')), isFalse);
     });
 
     test('battery C-rate is power divided by nominal energy', () {
