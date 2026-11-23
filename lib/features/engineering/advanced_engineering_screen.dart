@@ -67,7 +67,7 @@ class _AdvancedEngineeringScreenState extends ConsumerState<AdvancedEngineeringS
   void _calculate(){setState((){_error=null;try{_result=_selected.calculate(_values(_selected));}on Object catch(e){_result=null;_error=e.toString().replaceFirst('Invalid argument(s): ','');}});}
 
   void _useProjectInputs() {
-    final project = ref.read(activeProjectProvider).valueOrNull;
+    final project = ref.read(activeProjectProvider).value;
     if (project == null) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Create or select a project first.')));
       return;
@@ -118,7 +118,7 @@ class _AdvancedEngineeringScreenState extends ConsumerState<AdvancedEngineeringS
   }
 
   Future<void> _saveToProject() async {
-    final active=ref.read(activeProjectProvider).valueOrNull;
+    final active=ref.read(activeProjectProvider).value;
     if(_result==null)return;
     if(active==null){if(mounted)ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content:Text('Select or create an active project before saving this calculation.')));return;}
     setState(()=>_saving=true);
@@ -141,7 +141,7 @@ class _AdvancedEngineeringScreenState extends ConsumerState<AdvancedEngineeringS
   }
 
   @override Widget build(BuildContext context){
-    final active=ref.watch(activeProjectProvider).valueOrNull;
+    final active=ref.watch(activeProjectProvider).value;
     final groups=<String,List<_CalcSpec>>{};for(final c in _calculators){groups.putIfAbsent(c.group,()=>[]).add(c);}
     return Scaffold(
       appBar:AppBar(title:const Text('Advanced engineering library'),actions:[if(active!=null)Padding(padding:const EdgeInsets.only(right:12),child:Center(child:Chip(avatar:const Icon(Icons.folder_copy_outlined,size:16),label:Text(active.name,overflow:TextOverflow.ellipsis))))]),

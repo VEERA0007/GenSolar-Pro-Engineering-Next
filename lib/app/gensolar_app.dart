@@ -19,7 +19,6 @@ class GenSolarApp extends StatelessWidget {
         title: 'GenSolar Pro Engineering',
         debugShowCheckedModeBanner: false,
         theme: GenSolarTheme.light(),
-        builder: (context, child) => MaterialUiCompatibilityBridge(child: child ?? const SizedBox.shrink()),
         home: const _ApplicationShell(),
       );
 }
@@ -70,7 +69,7 @@ class _ApplicationShellState extends ConsumerState<_ApplicationShell> {
     final width = MediaQuery.sizeOf(context).width;
     final desktop = width >= 1120;
     final tablet = width >= 760 && width < 1120;
-    final projectItems = projects.valueOrNull ?? const [];
+    final projectItems = projects.value ?? const [];
     SolarProject? selectedProject;
     for (final item in projectItems) {
       if (item.id == activeProjectId) { selectedProject = item; break; }

@@ -176,14 +176,14 @@ class _NumberInput extends StatelessWidget {
   const _NumberInput({required this.label, required this.controller, required this.onChanged, this.optional = false});
   final String label;
   final TextEditingController controller;
-  final ValueChanged<String> onChanged;
+  final VoidCallback onChanged;
   final bool optional;
 
   @override
   Widget build(BuildContext context) => TextField(
         controller: controller,
         keyboardType: const TextInputType.numberWithOptions(decimal: true),
-        onChanged: onChanged,
+        onChanged: (_) => onChanged(),
         decoration: InputDecoration(labelText: optional ? '$label (optional)' : label),
       );
 }

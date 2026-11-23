@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:math' as math;
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:file_saver/file_saver.dart';
 import 'package:material_ui/material_ui.dart';
@@ -1263,7 +1264,7 @@ class _RoofPlanPainter extends CustomPainter {
   void _label(Canvas canvas, String text, Offset offset, {Color color = const Color(0xFF627268), double size = 10, FontWeight weight = FontWeight.w700}) {
     final painter = TextPainter(
       text: TextSpan(text: text, style: TextStyle(color: color, fontSize: size, fontWeight: weight, fontFamily: 'Roboto')),
-      textDirection: TextDirection.ltr,
+      textDirection: ui.TextDirection.ltr,
     )..layout();
     painter.paint(canvas, offset);
   }
@@ -1420,7 +1421,6 @@ class _IsometricRoofPainter extends CustomPainter {
     final g00 = _p(0, 0, 0, scale, origin);
     final g10 = _p(roofLength, 0, 0, scale, origin);
     final g11 = _p(roofLength, roofWidth, 0, scale, origin);
-    final g01 = _p(0, roofWidth, 0, scale, origin);
     final edge = Paint()..color = const Color(0xFF687B70)..style = PaintingStyle.stroke..strokeWidth = 1.4;
     canvas.drawPath(_quad(g00, g10, p10, p00), Paint()..color = const Color(0xFFD3DED6));
     canvas.drawPath(_quad(g10, g11, p11, p10), Paint()..color = const Color(0xFFBBCABD));
@@ -1473,14 +1473,14 @@ class _IsometricRoofPainter extends CustomPainter {
 
     final shadow = Paint()..color = const Color(0xFF20392C).withValues(alpha: .08);
     canvas.drawOval(Rect.fromCenter(center: Offset(origin.dx - 8, origin.dy + 5), width: (roofLength + roofWidth) * scale * .95, height: 15), shadow);
-    final tp = TextPainter(text: TextSpan(text: '3D CONCEPT VIEW · NOT A STRUCTURAL MODEL', style: const TextStyle(fontSize: 9, color: Color(0xFF738178), fontWeight: FontWeight.w800, letterSpacing: .7)), textDirection: TextDirection.ltr)..layout();
+    final tp = TextPainter(text: TextSpan(text: '3D CONCEPT VIEW · NOT A STRUCTURAL MODEL', style: const TextStyle(fontSize: 9, color: Color(0xFF738178), fontWeight: FontWeight.w800, letterSpacing: .7)), textDirection: ui.TextDirection.ltr)..layout();
     tp.paint(canvas, Offset(12, 10));
     final legendY = size.height - 16;
     canvas.drawRect(Rect.fromLTWH(14, legendY - 8, 10, 8), Paint()..color = panelColor.withValues(alpha: .68));
-    final legend = TextPainter(text: const TextSpan(text: 'PV modules', style: TextStyle(fontSize: 9, color: Color(0xFF64746A))), textDirection: TextDirection.ltr)..layout();
+    final legend = TextPainter(text: const TextSpan(text: 'PV modules', style: TextStyle(fontSize: 9, color: Color(0xFF64746A))), textDirection: ui.TextDirection.ltr)..layout();
     legend.paint(canvas, Offset(29, legendY - 10));
     canvas.drawRect(Rect.fromLTWH(110, legendY - 8, 10, 8), Paint()..color = const Color(0xFFFFE6BD));
-    final access = TextPainter(text: const TextSpan(text: 'Access strip', style: TextStyle(fontSize: 9, color: Color(0xFF64746A))), textDirection: TextDirection.ltr)..layout();
+    final access = TextPainter(text: const TextSpan(text: 'Access strip', style: TextStyle(fontSize: 9, color: Color(0xFF64746A))), textDirection: ui.TextDirection.ltr)..layout();
     access.paint(canvas, Offset(125, legendY - 10));
   }
 

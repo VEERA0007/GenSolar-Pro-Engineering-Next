@@ -61,7 +61,9 @@ class WorkspacesScreen extends ConsumerWidget {
                   physics: const NeverScrollableScrollPhysics(),
                   itemCount: _workspaces.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: columns, crossAxisSpacing: 12, mainAxisSpacing: 12, mainAxisExtent: 188),
-                  itemBuilder: (context, index) => _WorkspaceCard(workspace: _workspaces[index], onTap: () {
+                  itemBuilder: (context, index) {
+                    final workspace = _workspaces[index];
+                    return _WorkspaceCard(workspace: workspace, onTap: () {
                     if (workspace.title == 'Advanced engineering library') {
                       Navigator.of(context).push(MaterialPageRoute<void>(builder: (_) => const AdvancedEngineeringScreen()));
                     } else if (workspace.tab != null) {
@@ -78,7 +80,8 @@ class WorkspacesScreen extends ConsumerWidget {
                         actions: [TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Close'))],
                       ));
                     }
-                  }),
+                    });
+                  },
                 );
               }),
               const SizedBox(height: 16),

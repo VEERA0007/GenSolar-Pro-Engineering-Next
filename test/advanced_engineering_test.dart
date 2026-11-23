@@ -78,7 +78,7 @@ void main() {
         omPercent: 1, degradationPercent: .5, tariffEscalationPercent: 2,
         discountRatePercent: 10, years: 25,
       );
-      expect(result.metrics['NPV']!.value, isFinite);
+      expect(result.metrics['NPV']!.value.isFinite, isTrue);
       expect(result.metrics['Discounted LCOE proxy']!.value, greaterThan(0));
     });
 
