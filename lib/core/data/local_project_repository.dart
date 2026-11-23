@@ -24,7 +24,7 @@ class LocalProjectRepository implements ProjectRepository {
 
   Future<List<SolarProject>> _readAll() async {
     final raw = await _preferences.getString(_storageKey);
-    if (raw == null || raw.isEmpty) return const [];
+    if (raw == null || raw.isEmpty) return <SolarProject>[];
     try {
       final decoded = jsonDecode(raw) as List<dynamic>;
       return decoded
@@ -45,9 +45,7 @@ class LocalProjectRepository implements ProjectRepository {
 
   @override
   Future<List<SolarProject>> loadAll() => _serialize(() async {
-    final projects = await _readAll();
-    projects.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-    return projects;
+    return _readAll();
   });
 
   @override
