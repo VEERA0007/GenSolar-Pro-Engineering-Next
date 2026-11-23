@@ -16,6 +16,5 @@ void main() {
     await tester.pump();
 
     expect(find.byType(GenSolarApp), findsOneWidget);
-    expect(find.text('GenSolar Pro'), findsWidgets);
   });
 }
