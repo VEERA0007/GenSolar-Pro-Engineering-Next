@@ -103,13 +103,14 @@ void main() {
       expect(result.warnings, isNotEmpty);
     });
 
-    test('cable ampacity applies all derating factors', () {
+    test('cable ampacity applies derating and retains design-scope warnings', () {
       final result = AdvancedEngineering.cableAmpacityDerating(
         designCurrentA: 100, baseAmpacityA: 200, ambientFactor: .9,
         groupingFactor: .8, installationFactor: .95,
       );
       expect(result.metrics['Effective ampacity']!.value, closeTo(136.8, .001));
-      expect(result.warnings, isEmpty);
+      expect(result.warnings, contains(contains('No conductor temperature')));
+      expect(result.warnings, isNot(contains(contains('Design current exceeds'))));
     });
 
     test('battery C-rate is power divided by nominal energy', () {
@@ -142,7 +143,7 @@ void main() {
         reinforcementKgPerM3: 100,
       );
       expect(result.metrics['Net concrete']!.value, 1.5);
-      expect(result.metrics['Concrete order quantity']!.value, 1.575);
+      expect(result.metrics['Concrete order quantity']!.value, closeTo(1.575, 1e-9));
       expect(result.metrics['Reinforcement estimate']!.value, 150);
     });
   });

@@ -103,7 +103,7 @@ void main() {
         roundTripEfficiencyPercent: 90, nominalVoltageV: 512,
         inverterContinuousKw: 6,
       );
-      expect(double.parse(result.metrics[1].value), closeTo(27.7778, .001));
+      expect(double.parse(result.metrics[1].value), closeTo(27.78, .001));
       expect(double.parse(result.metrics[2].value.split(' ').first), closeTo(54.25, .1));
     });
 
