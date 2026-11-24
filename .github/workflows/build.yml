@@ -2,17 +2,18 @@ name: GenSolar Pro Engineering - Cross-platform CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, "feat/**", "fix/**"]
   pull_request:
     branches: [main]
   workflow_dispatch:
 
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: gensolar-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   validate:
@@ -31,11 +32,11 @@ jobs:
         run: flutter create --platforms=android,ios,web,windows,macos,linux --org com.gensolar --project-name gensolar_pro_engineering .
       - name: Resolve dependencies
         run: flutter pub get
-      - name: Format Dart source
-        run: dart format lib test
+      - name: Verify formatting
+        run: dart format --output=none --set-exit-if-changed lib test
       - name: Analyze
         run: flutter analyze --fatal-warnings --no-fatal-infos
-      - name: Unit tests
+      - name: Unit and widget tests
         run: flutter test --reporter expanded
 
   build:
