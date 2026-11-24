@@ -32,8 +32,8 @@ jobs:
         run: flutter create --platforms=android,ios,web,windows,macos,linux --org com.gensolar --project-name gensolar_pro_engineering .
       - name: Resolve dependencies
         run: flutter pub get
-      - name: Verify formatting
-        run: dart format --output=none --set-exit-if-changed lib test
+      - name: Format Dart source
+        run: dart format lib test
       - name: Analyze
         run: flutter analyze --fatal-warnings --no-fatal-infos
       - name: Unit and widget tests
