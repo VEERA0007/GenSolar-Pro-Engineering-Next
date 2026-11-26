@@ -54,8 +54,8 @@ class _UpdateGateState extends State<_UpdateGate> {
       context: context,
       barrierDismissible: true,
       builder: (dialogContext) => UpdateDownloadDialog(
-        currentVersion: '1.0.0+${release.currentBuildNumber}',
-        newVersion: '1.0.0+${release.buildNumber}',
+        currentVersion: release.currentVersion,
+        newVersion: '${release.version}+${release.buildNumber}',
         downloadUrl: release.downloadUrl,
         releaseUrl: release.releaseUrl,
         fileName: release.fileName,
