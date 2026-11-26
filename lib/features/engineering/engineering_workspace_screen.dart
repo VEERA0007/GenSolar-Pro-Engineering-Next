@@ -12,6 +12,7 @@ import 'package:pdf/widgets.dart' as pw;
 
 import '../../app/theme.dart';
 import '../../core/engineering/engineering_workflows.dart';
+import '../../core/engineering/roof_polygon.dart';
 import '../../core/models/solar_project.dart';
 import '../../core/providers.dart';
 import '../../shared/widgets/section_heading.dart';
@@ -621,6 +622,7 @@ class _CalculationTab extends StatefulWidget {
 
 class _CalculationTabState extends State<_CalculationTab> {
   late final Map<String, TextEditingController> _controllers;
+  late final TextEditingController? _roofBoundaryController;
   Set<int> _excluded = {};
   bool _busy = false;
   bool _hasLocalChanges = false;
@@ -630,8 +632,21 @@ class _CalculationTabState extends State<_CalculationTab> {
     super.initState();
     _controllers = {for (final field in widget.definition.fields)
       field.key: TextEditingController(text: (widget.initialData[field.key] ?? field.initial).toString())};
+    _roofBoundaryController = widget.section == 'survey'
+        ? TextEditingController(text: _formatRoofBoundary(widget.initialData['roofBoundary']))
+        : null;
     final raw = widget.initialData['manualExcludedCells'];
     if (raw is List) _excluded = raw.whereType<num>().map((n) => n.toInt()).toSet();
+  }
+
+  String _formatRoofBoundary(Object? raw) {
+    if (raw is! List) return '';
+    return raw.whereType<Map>().map((point) {
+      final x = point['x'];
+      final y = point['y'];
+      if (x is! num || y is! num) return '';
+      return '${x.toString()}, ${y.toString()}';
+    }).where((line) => line.isNotEmpty).join('\\n');
   }
 
   @override
@@ -644,12 +659,16 @@ class _CalculationTabState extends State<_CalculationTab> {
       }
       final raw = widget.initialData['manualExcludedCells'];
       _excluded = raw is List ? raw.whereType<num>().map((n) => n.toInt()).toSet() : {};
+      if (_roofBoundaryController != null) {
+        _roofBoundaryController!.text = _formatRoofBoundary(widget.initialData['roofBoundary']);
+      }
     }
   }
 
   @override
   void dispose() {
     for (final controller in _controllers.values) { controller.dispose(); }
+    _roofBoundaryController?.dispose();
     super.dispose();
   }
 
@@ -665,6 +684,20 @@ class _CalculationTabState extends State<_CalculationTab> {
       if (widget.allowManualPlacement) 'manualExcludedCells': _excluded.toList()..sort(),
       'needsReview': false,
     };
+    final boundaryText = _roofBoundaryController?.text.trim() ?? '';
+    if (boundaryText.isNotEmpty) {
+      final polygon = RoofPolygon.fromCoordinateText(boundaryText);
+      snapshot['roofBoundary'] = polygon.vertices.map((point) => <String, Object?>{'x': point.x, 'y': point.y}).toList();
+      snapshot['roofPolygonMetrics'] = <String, Object?>{
+        'grossAreaM2': polygon.areaM2,
+        'perimeterM': polygon.perimeterM,
+        'vertexCount': polygon.vertices.length,
+        'coordinateBasis': 'local roof plan metres',
+      };
+    } else if (widget.section == 'survey') {
+      snapshot['roofBoundary'] = <Object?>[];
+      snapshot['roofPolygonMetrics'] = null;
+    }
     try {
       final result = widget.definition.calculate(values, _excluded.toList());
       snapshot['calculationResult'] = <String, Object?>{
@@ -705,6 +738,15 @@ class _CalculationTabState extends State<_CalculationTab> {
         SnackBar(content: Text('Correct these inputs before saving: ${invalid.join(', ')}')),
       );
       return false;
+    }
+    final boundaryText = _roofBoundaryController?.text.trim() ?? '';
+    if (boundaryText.isNotEmpty) {
+      try {
+        RoofPolygon.fromCoordinateText(boundaryText);
+      } catch (error) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Correct the roof boundary coordinates: $error')));
+        return false;
+      }
     }
     try {
       // Cross-field/geometry validation is performed by the same pure
@@ -804,6 +846,25 @@ class _CalculationTabState extends State<_CalculationTab> {
               },
             );
           }),
+          if (_roofBoundaryController != null) ...[
+            const SizedBox(height: 14),
+            TextField(
+              controller: _roofBoundaryController,
+              minLines: 3,
+              maxLines: 6,
+              keyboardType: TextInputType.multiline,
+              onChanged: (_) => setState(() => _hasLocalChanges = true),
+              decoration: const InputDecoration(
+                labelText: 'Roof boundary vertices (optional)',
+                hintText: '0, 0\\n30, 0\\n28, 18\\n2, 20',
+                helperText: 'Enter one local-plan point per line as X, Y in metres. Use at least 3 points. The polygon area is stored as survey evidence; PV placement still uses the rectangular layout until polygon-aware placement is implemented.',
+                alignLabelWithHint: true,
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 10),
+            _RoofPolygonSummary(coordinateText: _roofBoundaryController!.text),
+          ],
           const SizedBox(height: 14),
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             if (widget.onNext != null) ...[
