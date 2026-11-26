@@ -23,6 +23,7 @@
 - Dashboard, project create/list/delete, active project switch and offline local project persistence.
 - JSON backup export and restore from file or pasted JSON.
 - Site survey inputs and area/slope/usable-footprint calculation.
+- Feature branch addition: optional local-coordinate roof polygon capture, area/perimeter summary, concave outline support and geometry validation. This is survey evidence only; it does not yet clip PV module placement or replace rectangular fit calculations.
 - Rectangular PV module layout, portrait/landscape comparison, module count/capacity/area, manual module exclusions, DXF export, 2D and concept isometric preview.
 - Specific-yield / performance-ratio / loss / tariff annual generation estimate and indicative monthly chart.
 - Cold Voc, MPPT window and simplified DC copper voltage-drop screening.
@@ -39,7 +40,7 @@ This source-building container does not have the Flutter or Dart SDK, and outbou
 
 ## Not yet implemented / release-blocking scope
 
-- Arbitrary multi-roof polygons, roof zones, obstacles, fire/access corridors and automatic multi-zone allocation.
+- Multiple roof zones, obstacles, fire/access corridors and automatic multi-zone allocation. A single optional polygon boundary can now be recorded as survey evidence, but it is not yet used for PV module clipping or multi-zone optimization.
 - Live device GPS, map provider integration, offline maps and survey photo/evidence handling.
 - Source-backed weather/resource service, validated monthly yield, sun-position and time-series/module-level shade modelling.
 - Full editable CAD entity/layer/dimension tools, DXF import and drawing-sheet release; licensed DWG/SKP support.
