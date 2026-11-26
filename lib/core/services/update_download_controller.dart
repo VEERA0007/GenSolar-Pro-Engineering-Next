@@ -1,4 +1,7 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
+import 'package:file_saver/file_saver.dart';
 import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
@@ -58,26 +61,49 @@ class UpdateDownloadController extends ChangeNotifier {
     try {
       // Browsers handle the final save location. Native platforms store the
       // package in app support storage until the platform installer opens it.
-      final destination = kIsWeb
-          ? safeFileName
-          : path.join(
-              (await getApplicationSupportDirectory()).path,
-              safeFileName,
-            );
-
-      await _dio.download(
-        url,
-        destination,
-        cancelToken: _cancelToken,
-        deleteOnError: true,
-        onReceiveProgress: (received, total) {
-          receivedBytes = received;
-          totalBytes = total;
-          notifyListeners();
-        },
-      );
-
-      downloadedPath = destination;
+      if (kIsWeb) {
+        // Browser builds cannot write to a local filesystem path. Fetch bytes
+        // with progress, then hand them to the browser download/save API.
+        final response = await _dio.get<List<int>>(
+          url,
+          cancelToken: _cancelToken,
+          options: Options(responseType: ResponseType.bytes),
+          onReceiveProgress: (received, total) {
+            receivedBytes = received;
+            totalBytes = total;
+            notifyListeners();
+          },
+        );
+        final bytes = response.data;
+        if (bytes == null || bytes.isEmpty) {
+          throw StateError('The update server returned an empty file.');
+        }
+        final extension = path.extension(safeFileName).replaceFirst('.', '');
+        final name = path.basenameWithoutExtension(safeFileName);
+        downloadedPath = await FileSaver.instance.saveFile(
+          name: name,
+          bytes: Uint8List.fromList(bytes),
+          fileExtension: extension,
+          mimeType: MimeType.other,
+        );
+      } else {
+        final destination = path.join(
+          (await getApplicationSupportDirectory()).path,
+          safeFileName,
+        );
+        await _dio.download(
+          url,
+          destination,
+          cancelToken: _cancelToken,
+          deleteOnError: true,
+          onReceiveProgress: (received, total) {
+            receivedBytes = received;
+            totalBytes = total;
+            notifyListeners();
+          },
+        );
+        downloadedPath = destination;
+      }
       status = UpdateDownloadStatus.completed;
       notifyListeners();
       return destination;
