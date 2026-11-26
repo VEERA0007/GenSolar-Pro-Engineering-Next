@@ -646,7 +646,7 @@ class _CalculationTabState extends State<_CalculationTab> {
       final y = point['y'];
       if (x is! num || y is! num) return '';
       return '${x.toString()}, ${y.toString()}';
-    }).where((line) => line.isNotEmpty).join('\\n');
+    }).where((line) => line.isNotEmpty).join('\n');
   }
 
   @override
@@ -856,7 +856,7 @@ class _CalculationTabState extends State<_CalculationTab> {
               onChanged: (_) => setState(() => _hasLocalChanges = true),
               decoration: const InputDecoration(
                 labelText: 'Roof boundary vertices (optional)',
-                hintText: '0, 0\\n30, 0\\n28, 18\\n2, 20',
+                hintText: '0, 0\n30, 0\n28, 18\n2, 20',
                 helperText: 'Enter one local-plan point per line as X, Y in metres. Use at least 3 points. The polygon area is stored as survey evidence; PV placement still uses the rectangular layout until polygon-aware placement is implemented.',
                 alignLabelWithHint: true,
                 border: OutlineInputBorder(),
@@ -927,6 +927,62 @@ class _CalculationTabState extends State<_CalculationTab> {
       ]))),
     );
   }
+}
+
+
+class _RoofPolygonSummary extends StatelessWidget {
+  const _RoofPolygonSummary({required this.coordinateText});
+
+  final String coordinateText;
+
+  @override
+  Widget build(BuildContext context) {
+    final text = coordinateText.trim();
+    if (text.isEmpty) {
+      return const Text('No polygon entered. The rectangular roof dimensions remain the active survey basis.');
+    }
+    try {
+      final polygon = RoofPolygon.fromCoordinateText(text);
+      return Card(
+        color: Theme.of(context).colorScheme.surfaceContainerLow,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Wrap(
+            spacing: 18,
+            runSpacing: 8,
+            children: [
+              _PolygonMetric(label: 'Boundary area', value: '${polygon.areaM2.toStringAsFixed(2)} m²'),
+              _PolygonMetric(label: 'Perimeter', value: '${polygon.perimeterM.toStringAsFixed(2)} m'),
+              _PolygonMetric(label: 'Vertices', value: polygon.vertices.length.toString()),
+              const Text('Survey geometry only · PV fit is still rectangular', style: TextStyle(fontSize: 11)),
+            ],
+          ),
+        ),
+      );
+    } catch (error) {
+      return Text(
+        'Boundary validation: $error',
+        style: TextStyle(color: Theme.of(context).colorScheme.error, fontSize: 12),
+      );
+    }
+  }
+}
+
+class _PolygonMetric extends StatelessWidget {
+  const _PolygonMetric({required this.label, required this.value});
+
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      Text(label, style: Theme.of(context).textTheme.labelSmall),
+      Text(value, style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800)),
+    ],
+  );
 }
 
 class _MonthlyYieldChart extends StatelessWidget {
