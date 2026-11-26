@@ -150,3 +150,46 @@ jobs:
           path: build/ios/iphoneos/Runner.app/
           if-no-files-found: error
           retention-days: 14
+
+  publish-release:
+    name: Publish successful builds to GitHub Releases
+    needs: [validate, build]
+    if: github.event_name != 'pull_request' && needs.validate.result == 'success' && needs.build.result == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - name: Download all platform artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+      - name: Package platform downloads
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+          apk="$(find artifacts/GenSolar-Pro-Next-Android-debug-APK -type f -name '*.apk' -print -quit)"
+          test -n "$apk"
+          cp "$apk" release-assets/GenSolar-Pro-Android-debug.apk
+          for platform in Web Linux Windows macOS iOS-unsigned; do
+            folder="artifacts/GenSolar-Pro-Next-${platform}"
+            if [ -d "$folder" ]; then
+              (cd "$folder" && zip -qr "../../release-assets/GenSolar-Pro-${platform}.zip" .)
+            fi
+          done
+          ls -lh release-assets
+      - name: Publish release
+        uses: softprops/action-gh-release@v3
+        with:
+          tag_name: build-${{ github.run_number }}
+          name: GenSolar Pro build ${{ github.run_number }}
+          body: |
+            Automated cross-platform build from commit ${{ github.sha }}.
+
+            Downloads are provided for Android (debug APK), Web, Linux, Windows, macOS and iOS (unsigned, for development only).
+          files: release-assets/*
+          fail_on_unmatched_files: true
+          make_latest: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
