@@ -6,6 +6,7 @@ class GenSolarRelease {
   const GenSolarRelease({
     required this.version,
     required this.buildNumber,
+    required this.currentBuildNumber,
     required this.downloadUrl,
     required this.fileName,
     required this.releaseUrl,
@@ -13,6 +14,7 @@ class GenSolarRelease {
 
   final String version;
   final int buildNumber;
+  final int currentBuildNumber;
   final String downloadUrl;
   final String fileName;
   final String releaseUrl;
@@ -80,6 +82,7 @@ class UpdateReleaseService {
         release: GenSolarRelease(
           version: package.version,
           buildNumber: latestBuild,
+          currentBuildNumber: currentBuild,
           downloadUrl: url,
           fileName: assetName,
           releaseUrl: data['html_url'] as String? ?? url,
