@@ -12,6 +12,7 @@ import '../features/engineering/engineering_workspace_screen.dart';
 import '../features/workspaces/workspaces_screen.dart';
 import '../core/services/update_release_service.dart';
 import '../shared/widgets/update_download_dialog.dart';
+import '../core/services/update_installer.dart';
 
 class GenSolarApp extends StatelessWidget {
   const GenSolarApp({super.key});
@@ -56,12 +57,21 @@ class _UpdateGateState extends State<_UpdateGate> {
         currentVersion: '1.0.0+${release.currentBuildNumber}',
         newVersion: '1.0.0+${release.buildNumber}',
         downloadUrl: release.downloadUrl,
+        releaseUrl: release.releaseUrl,
         fileName: release.fileName,
-        onDownloaded: (_) {
+        onDownloaded: (downloadedPath) async {
+          final installResult = await UpdateInstaller().install(
+            downloadedPath: downloadedPath,
+            releaseUrl: release.releaseUrl,
+          );
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
-                'Update downloaded. Open the downloaded package to install it.',
+                installResult.message ??
+                    (installResult.status == UpdateInstallStatus.launched
+                        ? 'Installer opened. Follow the platform installation prompts.'
+                        : 'Update package downloaded.'),
               ),
             ),
           );
