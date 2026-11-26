@@ -863,7 +863,7 @@ class _CalculationTabState extends State<_CalculationTab> {
               ),
             ),
             const SizedBox(height: 10),
-            _RoofPolygonSummary(coordinateText: _roofBoundaryController!.text),
+            _RoofPolygonSummary(coordinateText: _roofBoundaryController.text),
           ],
           const SizedBox(height: 14),
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
