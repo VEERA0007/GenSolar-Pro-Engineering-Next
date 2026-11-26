@@ -41,6 +41,7 @@ The in-workspace delivery rail provides direct navigation and shows captured, no
 - Local project create/search/edit/delete, active-project selection and project-scoped engineering records; site and target-capacity edits invalidate dependent saved sections.
 - Serialized local repository operations for project reads/imports/writes/deletes, JSON backup and restore.
 - Site survey calculations for roof footprint, slope surface estimate and preliminary usable area.
+- Optional local-coordinate roof polygon capture with area/perimeter metrics, concave-boundary support and self-intersection/degenerate-outline validation; PV module placement remains rectangular.
 - Rectangular PV layout fit estimate, orientation comparison, module count, DC capacity, setbacks, walkway, module gap, manual cell exclusions and retained results.
 - 2D roof plan and conceptual isometric PV preview based on the same saved layout inputs.
 - Metre-unit ASCII DXF export with roof and PV module layers.
