@@ -10,6 +10,8 @@ import '../features/projects/projects_screen.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/engineering/engineering_workspace_screen.dart';
 import '../features/workspaces/workspaces_screen.dart';
+import '../core/services/update_release_service.dart';
+import '../shared/widgets/update_download_dialog.dart';
 
 class GenSolarApp extends StatelessWidget {
   const GenSolarApp({super.key});
@@ -19,8 +21,57 @@ class GenSolarApp extends StatelessWidget {
         title: 'GenSolar Pro Engineering',
         debugShowCheckedModeBanner: false,
         theme: GenSolarTheme.light(),
-        home: const _ApplicationShell(),
+        home: const _UpdateGate(child: _ApplicationShell()),
       );
+}
+
+
+class _UpdateGate extends StatefulWidget {
+  const _UpdateGate({required this.child});
+  final Widget child;
+
+  @override
+  State<_UpdateGate> createState() => _UpdateGateState();
+}
+
+class _UpdateGateState extends State<_UpdateGate> {
+  bool _checked = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _checkForUpdate());
+  }
+
+  Future<void> _checkForUpdate() async {
+    if (_checked || !mounted) return;
+    _checked = true;
+    final result = await UpdateReleaseService().checkForUpdate();
+    if (!mounted || !result.hasUpdate) return;
+    final release = result.release!;
+    await showDialog<void>(
+      context: context,
+      barrierDismissible: true,
+      builder: (dialogContext) => UpdateDownloadDialog(
+        currentVersion: '1.0.0',
+        newVersion: '1.0.0+${release.buildNumber}',
+        downloadUrl: release.downloadUrl,
+        fileName: release.fileName,
+        onDownloaded: (_) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text(
+                'Update downloaded. Open the downloaded package to install it.',
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 class _Destination {
