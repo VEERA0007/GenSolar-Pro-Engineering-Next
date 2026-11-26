@@ -660,7 +660,7 @@ class _CalculationTabState extends State<_CalculationTab> {
       final raw = widget.initialData['manualExcludedCells'];
       _excluded = raw is List ? raw.whereType<num>().map((n) => n.toInt()).toSet() : {};
       if (_roofBoundaryController != null) {
-        _roofBoundaryController!.text = _formatRoofBoundary(widget.initialData['roofBoundary']);
+        _roofBoundaryController.text = _formatRoofBoundary(widget.initialData['roofBoundary']);
       }
     }
   }
@@ -869,7 +869,7 @@ class _CalculationTabState extends State<_CalculationTab> {
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
             if (widget.onNext != null) ...[
               OutlinedButton.icon(
-                onPressed: _busy ? null : () async { if (await _save()) widget.onNext!.call(); },
+                onPressed: _busy ? null : () async { if (await _save()) widget.onNext.call(); },
                 icon: const Icon(Icons.arrow_forward_rounded),
                 label: const Text('Save & continue'),
               ),
