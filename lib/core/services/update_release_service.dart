@@ -5,6 +5,7 @@ import 'package:package_info_plus/package_info_plus.dart';
 class GenSolarRelease {
   const GenSolarRelease({
     required this.version,
+    required this.currentVersion,
     required this.buildNumber,
     required this.currentBuildNumber,
     required this.downloadUrl,
@@ -13,6 +14,7 @@ class GenSolarRelease {
   });
 
   final String version;
+  final String currentVersion;
   final int buildNumber;
   final int currentBuildNumber;
   final String downloadUrl;
@@ -81,6 +83,7 @@ class UpdateReleaseService {
       return UpdateCheckResult(
         release: GenSolarRelease(
           version: package.version,
+          currentVersion: '${package.version}+${package.buildNumber}',
           buildNumber: latestBuild,
           currentBuildNumber: currentBuild,
           downloadUrl: url,
@@ -107,7 +110,8 @@ class UpdateReleaseService {
       case TargetPlatform.macOS:
         return 'GenSolar-Pro-macOS.zip';
       case TargetPlatform.iOS:
-        return 'GenSolar-Pro-iOS-unsigned.zip';
+        // CI output is unsigned and cannot be installed as an App Store update.
+        return null;
       case TargetPlatform.fuchsia:
         return null;
     }
