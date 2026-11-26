@@ -16,10 +16,10 @@ class RoofPolygon {
 
   factory RoofPolygon.fromCoordinateText(String source) {
     final points = <RoofPoint>[];
-    for (final rawLine in source.split(RegExp(r'[\\r\\n;]+'))) {
+    for (final rawLine in source.split(RegExp(r'[\r\n;]+'))) {
       final line = rawLine.trim();
       if (line.isEmpty) continue;
-      final parts = line.split(RegExp(r'[,\\s]+')).where((part) => part.isNotEmpty).toList();
+      final parts = line.split(RegExp(r'[,\s]+')).where((part) => part.isNotEmpty).toList();
       if (parts.length != 2) {
         throw FormatException('Each vertex must contain exactly two values: X, Y.');
       }
