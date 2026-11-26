@@ -10,6 +10,7 @@ class UpdateDownloadDialog extends StatefulWidget {
     required this.currentVersion,
     required this.newVersion,
     required this.downloadUrl,
+    required this.releaseUrl,
     required this.fileName,
     this.onDownloaded,
   });
@@ -17,6 +18,7 @@ class UpdateDownloadDialog extends StatefulWidget {
   final String currentVersion;
   final String newVersion;
   final String downloadUrl;
+  final String releaseUrl;
   final String fileName;
   final ValueChanged<String>? onDownloaded;
 
