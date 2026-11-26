@@ -77,7 +77,19 @@ jobs:
       - name: Stamp unique build number
         shell: bash
         run: |
-          sed -i "s/^version: .*/version: 1.0.0+${GITHUB_RUN_NUMBER}/" pubspec.yaml
+          python - <<'PY'
+          from pathlib import Path
+          path = Path("pubspec.yaml")
+          source = path.read_text()
+          source = __import__("re").sub(
+              r"^version: .*",
+              f"version: 1.0.0+{__import__('os').environ['GITHUB_RUN_NUMBER']}",
+              source,
+              count=1,
+              flags=__import__("re").MULTILINE,
+          )
+          path.write_text(source)
+          PY
       - name: Install Linux desktop dependencies
         if: matrix.platform == 'linux'
         run: |
